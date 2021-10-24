@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  db:
+    env_file:
+      - .env
+    image: postgres
+    volumes:
+      - ../db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+  web:
+    env_file:
+      - .env
+    build: ..
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ../back:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+  pgadmin: 
+    env_file:
+      - .env
+    depends_on:
+      - db
+    image: dpage/pgadmin4
+    ports:
+      - "80:80"
+    environment: 
+      - PGADMIN_DEFAULT_EMAIL=$PGADMIN_DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD=$PGADMIN_DEFAULT_PASSWORD
